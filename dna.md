@@ -69,6 +69,7 @@ CONFIG FILES
 
 
 Planned File Structure
+```
 .
 ├── ansible.cfg
 ├── dna.md
@@ -111,3 +112,4 @@ Planned File Structure
 │       │       └── main.yml
 │       └── templates
 └── testplan
+```
