@@ -2,15 +2,16 @@
 - name: remove conflicting iscsi packages
   package:
     name: "{{ item }}"
+    state: absent
   register: result
   until: result is succeeded
   with_items:
     - targetcli
-    - target
 
 - name: Install iSCSI packages
   package:
     name: "{{ item }}"
+    state: present
   register: result
   until: result is succeeded
   with_items:
@@ -22,8 +23,10 @@
 - name: Install High Availability Packages
   package:
     name: "{{ item }}"
+    state: present
   register: result
   until: result is succeeded
+  when: clustered | bool
   with_items:
     - pcs
     - pacemaker

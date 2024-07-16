@@ -1,12 +1,12 @@
 ---
-- include: repository.yml
+- include_tasks: repository.yml
   when:
     - not offline_install
 
-- include: rhel.yml
+- include_tasks: rhel.yml
   when:
     - ansible_facts['os_family'] == 'RedHat'
 
-- include: ubuntu.yml
+- include_tasks: ubuntu.yml
   when: 
     - ansible_facts['distribution'] == 'Ubuntu'

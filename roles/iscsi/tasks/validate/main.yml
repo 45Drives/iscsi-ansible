@@ -1,5 +1,5 @@
 ---
 - name: include kernel_check.yml
-  include: kernel_check.yml
+  include_tasks: kernel_check.yml
   when:
     - ansible_facts['os_family'] == 'RedHat'
