@@ -1,0 +1,7 @@
+* verify validate role correctly idenifies kernel mismatch when rhel family OS
+    * when kernel is mismatch, playbook should fail with correct message
+    * when is not mismatch, playbook should continue
+* Verify modprobe ansible module correctly created modules-load.d
+* Verify in both rocky and ubuntu firewall ports are opened
+* Verify in both rocky and ubuntu service is active and running
+* Verify in both rocky and ubuntu clustered servicea re functioning correctly.

@@ -1,0 +1,14 @@
+---
+- name: Backup the current lvm.conf
+  copy:
+    src: /etc/lvm/lvm.conf
+    dest: /etc/lvm/lvm.conf.bak
+    backup: yes
+
+- name: create lvm conf file
+  copy:
+    src: lvm.conf
+    dest: /etc/lvm/lvm.conf
+    owner: root
+    group: root
+    mode: '0644'

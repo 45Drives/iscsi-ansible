@@ -1,0 +1,31 @@
+---
+- name: remove conflicting iscsi packages
+  package:
+    name: "{{ item }}"
+  register: result
+  until: result is succeeded
+  with_items:
+    - targetcli
+    - target
+
+- name: Install iSCSI packages
+  package:
+    name: "{{ item }}"
+  register: result
+  until: result is succeeded
+  with_items:
+    - scst-dkms 
+    - scst-dkms-userspace
+    - scstadmin 
+    - dkms
+
+- name: Install High Availability Packages
+  package:
+    name: "{{ item }}"
+  register: result
+  until: result is succeeded
+  with_items:
+    - pcs
+    - pacemaker
+    - corosync
+    - ceph-resource-agents

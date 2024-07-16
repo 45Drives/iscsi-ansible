@@ -1,0 +1,28 @@
+---
+- name: open firewall ports
+  when: manage_firewall | bool
+  block:
+    - name: open iscsi firewall port - 3260/tcp
+      firewalld:
+        port: 3260/tcp
+        zone: "{{ iscsi_firewall_zone }}"
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: open iscsi firewall port - 3260/udp
+      firewalld:
+        port: 3260/udp
+        zone: "{{ iscsi_firewall_zone }}"
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: open iscsi HA ports
+      when: clustered | bool
+      firewalld:
+        service: high-availability
+        zone: "{{ iscsi_firewall_zone }}"
+        permanent: true
+        immediate: true
+        state: enabled

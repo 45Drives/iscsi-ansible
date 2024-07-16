@@ -1,0 +1,24 @@
+---
+- name: include validate tasks
+  include: validate/main.yml
+
+- name: include install tasks
+  include: install/main.yml
+
+- name: include firewall tasks
+  include: configure/firewall.yml
+
+- name: include iscsi setup tasks
+  include: configure/iscsi.yml
+
+- name: include cluster setup tasks
+  include: configure/cluster.yml
+  when: clustered | bool
+
+- name: include lvm.conf modifcation tasks
+  include: configure/lvm_conf_mods.yml
+  when: 
+    - clustered | bool
+    - overwrite_lvm_conf | bool
+
+

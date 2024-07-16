@@ -1,0 +1,19 @@
+---
+# Offline Mode
+offline_install: false
+
+# Firewall
+manage_firewall: true
+iscsi_firewall_zone: public
+
+# HA cluster specific varibles
+ceph_stable_key: https://repo.45drives.com/key/gpg.asc
+ceph_stable_release: octopus
+
+clustered: false 
+overwrite_lvm_conf: true
+
+pcs_cluster_name: iscsicluster
+pcs_user: iscsicluster
+
+

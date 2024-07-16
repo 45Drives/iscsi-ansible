@@ -1,0 +1,18 @@
+---
+- name: Get current running kernel version
+  shell: "uname -r"
+  register: current_kernel
+
+- name: Get the latest available kernel version
+  shell: "dnf --showduplicates --available list kernel | awk '/kernel/ {print $2}' | tail -1"
+  register: latest_kernel
+
+- name: Set latest_kernel fact
+  set_fact:
+    latest_kernel_version: "{{ latest_kernel.stdout }}.x86_64"
+
+- name: Check if the current running kernel is the latest available
+  fail:
+    msg: "The current kernel version ({{ current_kernel.stdout }}) does not match the latest available version ({{ latest_kernel_version }})."
+  when: current_kernel.stdout != latest_kernel_version
+

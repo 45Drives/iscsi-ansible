@@ -1,0 +1,77 @@
+- name: setup 45drives repository
+  block:
+  - name: Configure 45Drives repository | Get repo setup script
+    get_url:
+      url: https://repo.45drives.com/setup
+      dest: /tmp/setup
+
+  - name: Configure 45Drives repository | Run repo setup script
+    shell: bash /tmp/setup
+
+  - name: Configure 45Drives repository | Remove repo setup script
+    file:
+      path: /tmp/setup
+      state: absent
+
+- name: setup ceph repository on rhel family OS
+  when: 
+    - ansible_facts['os_family'] == 'RedHat'
+    - clustered | bool
+  block:
+    - name: install yum plugin priorities
+      package:
+        name: yum-plugin-priorities
+      register: result
+      until: result is succeeded
+      when: ansible_facts['distribution_major_version'] | int == 7
+  
+    - name: configure 45drives ceph repository stable key
+      rpm_key:
+        key: "{{ ceph_stable_key }}"
+        state: present
+      register: result
+      until: result is succeeded
+
+    - name: configure 45drives ceph repository
+      get_url:
+        url: "https://ceph.repo.45drives.com/{{ ceph_stable_release }}/rhel/el{{ ansible_facts['distribution_major_version'] }}/ceph_45d.repo"
+        dest: "/etc/yum.repos.d/ceph_45.repo"
+        mode: '0644'
+
+- name: setup ceph repository on debian family OS
+  when: 
+    - ansible_facts['os_family'] == 'Debian'
+    - clustered | bool
+  block:
+    - name: install dependencies for apt modules
+      package:
+        name: ['apt-transport-https', 'ca-certificates', 'gnupg', 'software-properties-common']
+        update_cache: yes
+      register: result
+      until: result is succeeded
+
+    - name: configure debian ceph community repository stable key
+      apt_key:
+        url: "{{ ceph_stable_key }}"
+        state: present
+      register: result
+      until: result is succeeded
+
+    - name: configure debian ceph stable community repository
+      apt_repository:
+        repo: "deb https://ceph.repo.45drives.com/{{ ceph_stable_release }}/debian {{ ansible_facts['distribution_release'] }} main"
+        state: present
+        update_cache: yes
+
+    - name: update apt cache if cache_valid_time has expired
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      register: result
+      until: result is succeeded
+
+- name: Enable HighAvailablity repo in rhel and clustered environments
+  shell: dnf config-manager --set-enabled ha
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version >= '8'

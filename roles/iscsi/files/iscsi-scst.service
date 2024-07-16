@@ -1,0 +1,15 @@
+[Unit]
+Description=iSCSI SCST Target Daemon
+Documentation=man:iscsi-scstd(8)
+After=network.target
+Before=scst.service
+Conflicts=shutdown.target
+
+[Service]
+EnvironmentFile=-/etc/sysconfig/scst
+PIDFile=/var/run/iscsi-scstd.pid
+ExecStartPre=/sbin/modprobe iscsi-scst
+ExecStart=/sbin/iscsi-scstd $ISCSID_OPTIONS
+
+[Install]
+WantedBy=multi-user.target

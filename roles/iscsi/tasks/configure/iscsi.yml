@@ -1,0 +1,26 @@
+---
+- name: load scst kernel modules
+  modprobe:
+    name: "{{ item }}"
+    state: present
+    persistent: present
+  with_items:
+    - iscsi-scst
+    - scst
+    - scst_vdisk
+
+- name: Create iscsi-scst systemd file
+  copy:
+    src: iscsi-scst.service
+    dest: /etc/systemd/system/iscsi-scst.service
+    owner: "root"
+    group: "root"
+    mode: 0755
+
+- name: Start iscsi-scst service
+  systemd:
+    name: iscsi-scst
+    state: started
+    enabled: yes
+    masked: no 
+

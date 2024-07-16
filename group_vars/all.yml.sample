@@ -1,0 +1,4 @@
+---
+offline_install: false
+manage_firewall: true
+clustered: false 
