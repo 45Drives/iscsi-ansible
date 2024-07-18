@@ -3,3 +3,7 @@
   include_tasks: kernel_check.yml
   when:
     - ansible_facts['os_family'] == 'RedHat'
+
+- name: include firewall_check.yml
+  include_tasks: firewall_check.yml
+  when: manage_firewall | bool
