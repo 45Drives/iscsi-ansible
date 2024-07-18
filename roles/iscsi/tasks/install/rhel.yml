@@ -8,6 +8,13 @@
   with_items:
     - targetcli
 
+- name: Install DKMS
+  package:
+    name: "dkms"
+    state: present
+  register: result
+  until: result is succeeded 
+
 - name: Install iSCSI packages
   package:
     name: "{{ item }}"
@@ -18,7 +25,6 @@
     - scst-dkms 
     - scst-dkms-userspace
     - scstadmin 
-    - dkms
 
 - name: Install High Availability Packages
   package:
