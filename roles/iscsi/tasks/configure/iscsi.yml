@@ -1,9 +1,16 @@
 ---
+- name: create scst.conf to load kernel modules at boot
+  copy:
+    src: scst.conf
+    dest: /etc/modules-load.d/scst.conf
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: load scst kernel modules
   modprobe:
     name: "{{ item }}"
     state: present
-    persistent: present
   with_items:
     - iscsi-scst
     - scst
