@@ -14,6 +14,6 @@ clustered: false
 overwrite_lvm_conf: true
 
 pcs_cluster_name: iscsicluster
-pcs_user: iscsicluster
+pcs_user: hacluster
 
 
