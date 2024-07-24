@@ -1,0 +1,46 @@
+{
+    "__version": "45D-R1",
+    "name": "iscsi-ansible",
+    "title": "iscsi-ansible",
+    "prerelease": false,
+    "version": "1.0.0",
+    "buildVersion": "1",
+    "author": "Brett Kelly <bkelly@45drives.com>",
+    "url": "https://github.com/45Drives/iscsi-ansible",
+    "category": "utils",
+    "priority": "optional",
+    "licence": "GPL-3.0+",
+    "architecture": {
+        "deb": "all",
+        "el": "noarch"
+    },
+    "description": {
+        "long": "Configure iSCSI services via SCST w. ansible",
+        "short": "Configure iSCSI services via SCST w. ansible"
+    },
+    "defaults": {
+        "urgency": "medium"
+    },
+    "dependencies": {
+        "deb": [
+            "ansible"
+        ],
+        "el": [
+            "ansible"
+        ]
+    },
+    "releases": [
+        {
+            "image": "ubuntu-focal-builder",
+            "codeName": "focal",
+            "type": "deb"
+        },
+        {
+            "image": "rocky-el8-builder",
+            "codeName": "el8",
+            "type": "el"
+        }
+    ],
+    "changelog": {
+    }
+}
