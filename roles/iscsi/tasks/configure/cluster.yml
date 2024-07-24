@@ -73,7 +73,7 @@
 - name: Create iSCSI resource agent files
   copy:
     src: "{{ item }}"
-    dest: /usr/lib/ocf/resource.d/heartbeat/{{ item }}
+    dest: "/usr/lib/ocf/resource.d/heartbeat/{{ item }}"
     owner: "root"
     group: "root"
     mode: 0755
