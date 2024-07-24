@@ -46,8 +46,10 @@
         "version": "1.0.0",
         "buildVersion": "1",
         "ignore": [],
-        "date": null,
+        "date": "2024-07-24T17:00:48.208552",
         "packager": "Brett Kelly <bkelly@45drives.com>",
-        "changes": []
+        "changes": [
+            "initial package build"
+        ]
     }
 }
