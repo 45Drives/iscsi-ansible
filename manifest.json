@@ -42,5 +42,12 @@
         }
     ],
     "changelog": {
+        "urgency": "medium",
+        "version": "1.0.0",
+        "buildVersion": "1",
+        "ignore": [],
+        "date": null,
+        "packager": "Brett Kelly <bkelly@45drives.com>",
+        "changes": []
     }
 }

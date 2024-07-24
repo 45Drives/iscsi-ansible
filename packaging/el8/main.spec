@@ -26,3 +26,5 @@ make DESTDIR=%{buildroot} install
 /usr/share/iscsi-ansible/*
 
 %changelog
+* Wed Jul 24 2024 Brett Kelly <bkelly@45drives.com> 1.0.0-1
+- initial package build
