@@ -3,7 +3,7 @@
     "name": "iscsi-ansible",
     "title": "iscsi-ansible",
     "prerelease": false,
-    "version": "1.0.0",
+    "version": "1.0.1",
     "buildVersion": "1",
     "author": "Brett Kelly <bkelly@45drives.com>",
     "url": "https://github.com/45Drives/iscsi-ansible",
@@ -43,13 +43,11 @@
     ],
     "changelog": {
         "urgency": "medium",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "buildVersion": "1",
         "ignore": [],
-        "date": "2024-07-24T17:00:48.208552",
+        "date": null,
         "packager": "Brett Kelly <bkelly@45drives.com>",
-        "changes": [
-            "initial package build"
-        ]
+        "changes": []
     }
 }
