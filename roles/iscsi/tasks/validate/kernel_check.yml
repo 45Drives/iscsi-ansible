@@ -3,6 +3,9 @@
   shell: "uname -r"
   register: current_kernel
 
+- name: Refresh DNF cache
+  shell: "dnf clean all"
+
 - name: Get the latest available kernel version
   shell: "dnf --showduplicates --available list kernel | awk '/kernel/ {print $2}' | tail -1"
   register: latest_kernel

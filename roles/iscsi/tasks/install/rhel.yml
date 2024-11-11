@@ -8,6 +8,13 @@
   with_items:
     - targetcli
 
+- name: Install Kernel Development packages for DKMS
+  package:
+    name: "kernel-devel"
+    state: present
+  register: result
+  until: result is succeeded
+
 - name: Install DKMS
   package:
     name: "dkms"
