@@ -7,7 +7,7 @@
   shell: "dnf clean all"
 
 - name: Get the latest available kernel version
-  shell: "dnf --showduplicates --available list kernel | awk '/kernel/ {print $2}' | tail -1"
+  shell: "dnf --showduplicates  list kernel | awk '/kernel/ {print $2}' |sort -t'.' -k1,1n -k2,2n -k3,3n -k4,4n | tail -n 1"
   register: latest_kernel
 
 - name: Set latest_kernel fact
