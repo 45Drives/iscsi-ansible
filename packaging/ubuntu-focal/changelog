@@ -1,3 +1,9 @@
+iscsi-ansible (1.0.3-1focal) focal; urgency=medium
+
+  * harden check for kernel mismatch
+
+ -- Brett Kelly <bkelly@45drives.com>  Thu, 06 Feb 2025 16:58:34 -0400
+
 iscsi-ansible (1.0.2-1focal) focal; urgency=medium
 
   * refresh dnf cache before checking for new kernels

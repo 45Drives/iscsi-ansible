@@ -26,6 +26,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/iscsi-ansible/*
 
 %changelog
+* Thu Feb 06 2025 Brett Kelly <bkelly@45drives.com> 1.0.3-1
+- harden check for kernel mismatch
 * Mon Nov 11 2024 Brett Kelly <bkelly@45drives.com> 1.0.2-1
 - refresh dnf cache before checking for new kernels
 - ensure kernel-devel is installed before building scst

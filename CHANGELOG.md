@@ -1,4 +1,3 @@
-## iscsi-ansible 1.0.2-1
+## iscsi-ansible 1.0.3-1
 
-* refresh dnf cache before checking for new kernels
-* ensure kernel-devel is installed before building scst
+* harden check for kernel mismatch

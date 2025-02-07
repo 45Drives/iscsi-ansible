@@ -1,0 +1,5 @@
+iscsi-ansible (1.0.3-1jammy) jammy; urgency=medium
+
+  * harden check for kernel mismatch
+
+ -- Brett Kelly <bkelly@45drives.com>  Thu, 06 Feb 2025 16:58:34 -0400
