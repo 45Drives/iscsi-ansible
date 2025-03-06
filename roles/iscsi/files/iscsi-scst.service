@@ -10,6 +10,7 @@ EnvironmentFile=-/etc/sysconfig/scst
 PIDFile=/var/run/iscsi-scstd.pid
 ExecStartPre=/sbin/modprobe iscsi-scst
 ExecStart=/sbin/iscsi-scstd $ISCSID_OPTIONS
+ExecStartPost=/sbin/scstadmin -config /etc/scst.conf
 
 [Install]
 WantedBy=multi-user.target

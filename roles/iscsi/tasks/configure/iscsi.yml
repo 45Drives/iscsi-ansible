@@ -24,6 +24,15 @@
     group: "root"
     mode: 0755
 
+- name: Create empty scst.conf file
+  copy:
+    content: ""
+    dest: /etc/scst.conf
+    force: false # Dont overwrite if already in place
+    group: root
+    owner: root
+    mode: 0644
+
 - name: Start iscsi-scst service
   systemd:
     name: iscsi-scst
