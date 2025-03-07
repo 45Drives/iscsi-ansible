@@ -1,3 +1,3 @@
-## iscsi-ansible 1.0.3-1
+## iscsi-ansible 1.0.3-2
 
-* harden check for kernel mismatch
+* update setup tasks for static config file

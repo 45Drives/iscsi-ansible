@@ -1,3 +1,9 @@
+iscsi-ansible (1.0.3-2jammy) jammy; urgency=medium
+
+  * update setup tasks for static config file
+
+ -- Brett Kelly <bkelly@45drives.com>  Fri, 07 Mar 2025 07:21:06 -0400
+
 iscsi-ansible (1.0.3-1jammy) jammy; urgency=medium
 
   * harden check for kernel mismatch
