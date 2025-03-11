@@ -47,8 +47,6 @@
         }
     ],
     "repos": [
-        "community",
-        "enterprise"
     ],
     "changelog": {
         "urgency": "medium",
