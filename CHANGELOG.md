@@ -1,3 +1,5 @@
-## iscsi-ansible 1.0.3-2
+## iscsi-ansible 1.0.4-1
 
-* update setup tasks for static config file
+* updated readme
+* another message
+* updated readme

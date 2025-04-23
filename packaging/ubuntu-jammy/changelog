@@ -1,3 +1,11 @@
+iscsi-ansible (1.0.4-1jammy) jammy; urgency=medium
+
+  * updated readme
+  * another message
+  * updated readme
+
+ -- Brett Kelly <bkelly@45drives.com>  Wed, 23 Apr 2025 09:40:49 -0300
+
 iscsi-ansible (1.0.3-2jammy) jammy; urgency=medium
 
   * update setup tasks for static config file
