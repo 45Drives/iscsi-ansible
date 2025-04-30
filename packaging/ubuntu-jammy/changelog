@@ -1,3 +1,9 @@
+iscsi-ansible (1.0.5-1jammy) jammy; urgency=medium
+
+  * Added task for enabling highavailability repo on RHEL9.
+
+ -- Brett Kelly <bkelly@45drives.com>  Wed, 30 Apr 2025 08:12:57 -0300
+
 iscsi-ansible (1.0.4-1jammy) jammy; urgency=medium
 
   * updated readme

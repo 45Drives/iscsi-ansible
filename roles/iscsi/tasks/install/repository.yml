@@ -24,19 +24,32 @@
       register: result
       until: result is succeeded
       when: ansible_facts['distribution_major_version'] | int == 7
-  
-    - name: configure 45drives ceph repository stable key
-      rpm_key:
-        key: "{{ ceph_stable_key }}"
-        state: present
-      register: result
-      until: result is succeeded
 
-    - name: configure 45drives ceph repository
-      get_url:
-        url: "https://ceph.repo.45drives.com/{{ ceph_stable_release }}/rhel/el{{ ansible_facts['distribution_major_version'] }}/ceph_45d.repo"
-        dest: "/etc/yum.repos.d/ceph_45.repo"
-        mode: '0644'
+    - name: Check if ceph-stable.repo exists
+      stat:
+        path: /etc/yum.repos.d/ceph-stable.repo
+      register: ceph_stable_check
+
+    - name: Add Ceph repository (Rocky Linux)
+      copy:
+        content: |
+          [Ceph-Stable]
+          name=Ceph packages
+          baseurl={{ ceph_rocky_repo }}x86_64/
+          enabled=1
+          gpgcheck=1
+          type=rpm-md
+          gpgkey=https://download.ceph.com/keys/release.asc
+
+          [Ceph-Noarch]
+          name=Ceph noarch packages
+          baseurl={{ ceph_rocky_repo }}noarch/
+          enabled=1
+          gpgcheck=1
+          type=rpm-md
+          gpgkey=https://download.ceph.com/keys/release.asc
+        dest: /etc/yum.repos.d/ceph-stable.repo
+      when: not ceph_stable_check.stat.exists
 
 - name: setup ceph repository on debian family OS
   when: 
@@ -59,7 +72,7 @@
 
     - name: configure debian ceph stable community repository
       apt_repository:
-        repo: "deb https://ceph.repo.45drives.com/{{ ceph_stable_release }}/debian {{ ansible_facts['distribution_release'] }} main"
+        repo: "deb https://download.ceph.com/debian-{{ ceph_stable_release }}/ {{ ansible_facts['distribution_release'] }} main"
         state: present
         update_cache: yes
 
@@ -74,5 +87,12 @@
   shell: dnf config-manager --set-enabled ha
   when:
     - ansible_os_family == 'RedHat'
-    - ansible_distribution_major_version >= '8'
+    - ansible_distribution_major_version == '8'
+    - clustered | bool
+
+- name: Enable HighAvailablity repo in rhel and clustered environments (Rocky9)
+  shell: dnf config-manager --set-enabled highavailability
+  when:
+    - ansible_os_family == 'RedHat'
+    - ansible_distribution_major_version == '9'
     - clustered | bool

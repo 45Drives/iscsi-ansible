@@ -1,5 +1,3 @@
-## iscsi-ansible 1.0.4-1
+## iscsi-ansible 1.0.5-1
 
-* updated readme
-* another message
-* updated readme
+* Added task for enabling highavailability repo on RHEL9.
