@@ -1,3 +1,9 @@
+iscsi-ansible (1.0.6-1jammy) jammy; urgency=medium
+
+  * Modified tasks for repo configuration to account for Cephadm deployments.
+
+ -- Brett Kelly <bkelly@45drives.com>  Thu, 29 May 2025 10:11:18 -0300
+
 iscsi-ansible (1.0.5-1jammy) jammy; urgency=medium
 
   * Added task for enabling highavailability repo on RHEL9.

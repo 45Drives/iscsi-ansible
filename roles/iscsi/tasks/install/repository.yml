@@ -17,6 +17,7 @@
   when: 
     - ansible_facts['os_family'] == 'RedHat'
     - clustered | bool
+    - repo_install | bool
   block:
     - name: install yum plugin priorities
       package:
@@ -27,7 +28,7 @@
 
     - name: Check if ceph-stable.repo exists
       stat:
-        path: /etc/yum.repos.d/ceph-stable.repo
+        path: /etc/yum.repos.d/ceph.repo
       register: ceph_stable_check
 
     - name: Add Ceph repository (Rocky Linux)
@@ -35,7 +36,7 @@
         content: |
           [Ceph-Stable]
           name=Ceph packages
-          baseurl={{ ceph_rocky_repo }}x86_64/
+          baseurl=https://download.ceph.com//rpm-{{ ceph_stable_release }}/el{{ ansible_facts['distribution_major_version'] }}/x86_64/
           enabled=1
           gpgcheck=1
           type=rpm-md
@@ -43,18 +44,19 @@
 
           [Ceph-Noarch]
           name=Ceph noarch packages
-          baseurl={{ ceph_rocky_repo }}noarch/
+          baseurl=https://download.ceph.com//rpm-{{ ceph_stable_release }}/el{{ ansible_facts['distribution_major_version'] }}/noarch/
           enabled=1
           gpgcheck=1
           type=rpm-md
           gpgkey=https://download.ceph.com/keys/release.asc
-        dest: /etc/yum.repos.d/ceph-stable.repo
+        dest: /etc/yum.repos.d/ceph.repo
       when: not ceph_stable_check.stat.exists
 
 - name: setup ceph repository on debian family OS
   when: 
     - ansible_facts['os_family'] == 'Debian'
     - clustered | bool
+    - repo_install | bool
   block:
     - name: install dependencies for apt modules
       package:
@@ -65,7 +67,7 @@
 
     - name: configure debian ceph community repository stable key
       apt_key:
-        url: "{{ ceph_stable_key }}"
+        url: https://download.ceph.com/keys/release.asc
         state: present
       register: result
       until: result is succeeded

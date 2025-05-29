@@ -3,7 +3,7 @@
     "name": "iscsi-ansible",
     "title": "iscsi-ansible",
     "description": "Configure iSCSI services via SCST w. ansible",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "build_number": "1",
     "stable": false,
     "author": "Brett Kelly <bkelly@45drives.com>",
@@ -52,7 +52,7 @@
     ],
     "changelog": {
         "urgency": "medium",
-        "version": "1.0.5",
+        "version": "1.0.6",
         "build_number": "1",
         "date": null,
         "packager": "Brett Kelly <bkelly@45drives.com>",
