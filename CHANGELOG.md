@@ -1,3 +1,3 @@
-## iscsi-ansible 1.0.6-1
+## iscsi-ansible 1.0.7-1
 
-* Modified tasks for repo configuration to account for Cephadm deployments.
+* Modified how playbook handles repo installation.

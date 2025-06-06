@@ -1,3 +1,9 @@
+iscsi-ansible (1.0.7-1jammy) jammy; urgency=medium
+
+  * Modified how playbook handles repo installation.
+
+ -- Brett Kelly <bkelly@45drives.com>  Fri, 06 Jun 2025 06:38:45 -0300
+
 iscsi-ansible (1.0.6-1jammy) jammy; urgency=medium
 
   * Modified tasks for repo configuration to account for Cephadm deployments.
