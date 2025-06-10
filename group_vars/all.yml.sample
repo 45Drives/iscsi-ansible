@@ -1,4 +1,8 @@
 ---
 offline_install: false
 manage_firewall: true
-clustered: false 
+clustered: true 
+
+#Only enable if Ceph repos aren't installed on the iscsi gateway nodes.
+repo_install: false
+ceph_stable_release: 18.2.2
