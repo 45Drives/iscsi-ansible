@@ -1,3 +1,4 @@
-## iscsi-ansible 1.0.7-1
+## iscsi-ansible 1.0.8-1
 
-* Modified how playbook handles repo installation.
+* Added tasks for copying ceph.conf and admin keyring to iscsi gateways. Also generates rbd keyring for gateways.}
+:

@@ -11,6 +11,10 @@
 - name: include iscsi setup tasks
   include_tasks: configure/iscsi.yml
 
+- name: include conf file tasks
+  include_tasks: configure/conf-file.yml
+  when: clustered | bool
+
 - name: include cluster setup tasks
   include_tasks: configure/cluster.yml
   when: clustered | bool

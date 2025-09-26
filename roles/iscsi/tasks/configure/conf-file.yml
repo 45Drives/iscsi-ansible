@@ -1,0 +1,41 @@
+---
+- name: Install Ceph common packages
+  apt:
+    name:
+      - ceph-common
+    state: present
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install Ceph common packages
+  dnf:
+    name:
+      - ceph-common
+    state: present
+  when: ansible_distribution == 'Rocky'
+
+- name: Check if ceph.conf exists
+  stat:
+    path: "/etc/ceph/ceph.conf"
+  register: ceph_conf_check
+
+- name: Copy ceph.conf file from localhost to nodes without ceph.conf
+  synchronize:
+    src: "/etc/ceph/ceph.conf"
+    dest: "/etc/ceph/ceph.conf"
+  when: not ceph_conf_check.stat.exists
+  delegate_to: localhost
+
+- name: Copy keyring file from localhost to nodes without keyring
+  synchronize:
+    src: /etc/ceph/ceph.client.admin.keyring
+    dest: /etc/ceph/ceph.client.admin.keyring
+  delegate_to: localhost
+
+- name: Create Ceph RBD client key
+  command: >
+    ceph auth get-or-create client.rbduser
+    mon 'allow r'
+    osd 'allow rwx pool=rbd'
+    -o /etc/ceph/ceph.client.rbduser.keyring
+  args:
+    creates: /etc/ceph/ceph.client.rbduser.keyring

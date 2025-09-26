@@ -1,3 +1,12 @@
+iscsi-ansible (1.0.8-1jammy) jammy; urgency=medium
+
+  * Added tasks for copying ceph.conf and admin keyring to iscsi gateways. Also generates
+    rbd keyring for gateways.}
+:
+
+
+ -- Brett Kelly <bkelly@45drives.com>  Fri, 26 Sep 2025 10:30:38 -0300
+
 iscsi-ansible (1.0.7-1jammy) jammy; urgency=medium
 
   * Modified how playbook handles repo installation.

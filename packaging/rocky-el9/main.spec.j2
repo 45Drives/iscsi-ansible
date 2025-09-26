@@ -26,6 +26,11 @@ make DESTDIR=%{buildroot} install
 /usr/share/iscsi-ansible/*
 
 %changelog
+* Fri Sep 26 2025 Brett Kelly <bkelly@45drives.com> 1.0.8-1
+- Added tasks for copying ceph.conf and admin keyring to iscsi gateways. Also generates
+  rbd keyring for gateways.}
+:
+
 * Fri Jun 06 2025 Brett Kelly <bkelly@45drives.com> 1.0.7-1
 - Modified how playbook handles repo installation.
 * Thu May 29 2025 Brett Kelly <bkelly@45drives.com> 1.0.6-1
