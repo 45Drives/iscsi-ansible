@@ -13,4 +13,6 @@ overwrite_lvm_conf: true
 pcs_cluster_name: iscsicluster
 pcs_user: hacluster
 
-
+#Only enable if Ceph repos aren't installed on the iscsi gateway nodes.
+repo_install: false
+ceph_stable_release: 18.2.2
