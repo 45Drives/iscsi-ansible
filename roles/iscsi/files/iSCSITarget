@@ -52,7 +52,9 @@ OCF_RESKEY_portals_default="0.0.0.0:3260"
 
 OCF_RESKEY_allowed_initiators_default=""
 : ${OCF_RESKEY_allowed_initiators=${OCF_RESKEY_allowed_initiators_default}}
-
+# NEW: optional multi-group mapping for SCST
+OCF_RESKEY_initiator_groups_default=""
+: ${OCF_RESKEY_initiator_groups=${OCF_RESKEY_initiator_groups_default}}
 # Lockfile, used for selecting a target ID
 LOCKFILE=${HA_RSCTMP}/iSCSITarget-${OCF_RESKEY_implementation}.lock
 
@@ -165,6 +167,16 @@ dependent. Neither the name nor the value may contain whitespace.
 </longdesc>
 <shortdesc lang="en">List of iSCSI target parameters</shortdesc>
 <content type="string" />
+</parameter>
+<parameter name="initiator_groups" required="0" unique="0">
+<longdesc lang="en">
+SCST only: define multiple access groups and their initiators.
+Format: "group1:initA,initB;group2:initC" (semicolon-separated groups; each group has a name, a colon, then a comma-separated list of initiators).
+If provided, this takes precedence over allowed_initiators for SCST and creates multiple groups.
+If not provided, the agent falls back to a single "allowed" group using allowed_initiators.
+</longdesc>
+<shortdesc lang="en">SCST: multiple initiator groups</shortdesc>
+<content type="string" default="${OCF_RESKEY_initiator_groups_default}"/>
 </parameter>
 
 </parameters>
@@ -415,11 +427,28 @@ iSCSITarget_start() {
 			portal_ip="${portal%%:*}"
 			ocf_run scstadmin -add_tgt_attr ${OCF_RESKEY_iqn} -driver iscsi -attributes "allowed_portal=${portal_ip}"
 		done
-		ocf_run scstadmin -add_group allowed -driver iscsi -target ${OCF_RESKEY_iqn}
-		if [ -n "${OCF_RESKEY_allowed_initiators}" ]; then
-			for initiator in ${OCF_RESKEY_allowed_initiators}; do
-				ocf_run scstadmin -add_init ${initiator} -group allowed -driver iscsi -target ${OCF_RESKEY_iqn}
+		if [ -n "${OCF_RESKEY_initiator_groups}" ]; then
+			IFS=';' read -r -a __scst_groups_arr <<< "${OCF_RESKEY_initiator_groups}"
+			for __grp_spec in "${__scst_groups_arr[@]}"; do
+				[ -z "${__grp_spec}" ] && continue
+				__grp_name="${__grp_spec%%:*}"
+				__grp_inits="${__grp_spec#*:}"
+				[ -z "${__grp_name}" ] && __grp_name="allowed"
+
+				ocf_run scstadmin -add_group "${__grp_name}" -driver iscsi -target ${OCF_RESKEY_iqn}
+				__grp_inits_spaced="${__grp_inits//,/ }"
+				for initiator in ${__grp_inits_spaced}; do
+					[ -z "${initiator}" ] && continue
+					ocf_run scstadmin -add_init "${initiator}" -group "${__grp_name}" -driver iscsi -target ${OCF_RESKEY_iqn}
+				done
 			done
+		else
+			ocf_run scstadmin -add_group allowed -driver iscsi -target ${OCF_RESKEY_iqn}
+ 			if [ -n "${OCF_RESKEY_allowed_initiators}" ]; then
+        		for initiator in ${OCF_RESKEY_allowed_initiators}; do
+            		ocf_run scstadmin -add_init ${initiator} -group allowed -driver iscsi -target ${OCF_RESKEY_iqn}
+        		done
+			fi
 		fi
 
 		if [ "${OCF_RESKEY_incoming_username}" != "" ]; then

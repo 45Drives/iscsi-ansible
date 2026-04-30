@@ -294,6 +294,11 @@ Do not use PSCSI unless you know exactly how it will be used.
 <content type="string" default="${OCF_RESKEY_liot_bstype_default}"/>
 </parameter>
 
+<parameter name="group" required="0" unique="0">
+  <longdesc lang="en">SCST only: initiator group to which this LUN will be exposed (LUN masking). If unset, the LUN is exposed to the entire target.</longdesc>
+  <shortdesc lang="en">SCST group for this LUN</shortdesc>
+  <content type="string"/>
+</parameter>
 </parameters>
 
 <actions>
@@ -485,23 +490,31 @@ iSCSILogicalUnit_start() {
 			echo ${OCF_RESKEY_emulate_caw} > ${iblock_attrib_path}/emulate_caw || exit $OCF_ERR_GENERIC
 		fi
 		;;
-	scst)
-		ocf_run scstadmin -open_dev "${OCF_RESOURCE_INSTANCE}" -handler vdisk_blockio -attributes "filename=${OCF_RESKEY_path},nv_cache=0,write_through=1"
-		if [ -n "${OCF_RESKEY_scsi_sn}" ]; then
-			ocf_run scstadmin -set_dev_attr "${OCF_RESOURCE_INSTANCE}" -attributes "usn=${OCF_RESKEY_scsi_sn}" -force -noprompt
-		fi
-		if [ -n "${OCF_RESKEY_vendor_id}" ]; then
-			ocf_run scstadmin -set_dev_attr "${OCF_RESOURCE_INSTANCE}" -attributes "t10_vend_id=${OCF_RESKEY_vendor_id}" -force -noprompt
-		fi
-		if [ -n "${OCF_RESKEY_product_id}" ]; then
-			ocf_run scstadmin -set_dev_attr "${OCF_RESOURCE_INSTANCE}" -attributes "t10_dev_id=${OCF_RESKEY_product_id}" -force -noprompt
-		fi
-		if [ -d "/sys/kernel/scst_tgt/targets/iscsi/${OCF_RESKEY_target_iqn}/ini_groups/allowed/" ]; then
-			# if an initiator group exists for the target, add the new LUN to it.
-			ocf_run scstadmin -add_lun ${OCF_RESKEY_lun} -driver iscsi -target "${OCF_RESKEY_target_iqn}" -device "${OCF_RESOURCE_INSTANCE}" -group allowed -force -noprompt
-		fi
-		ocf_run scstadmin -add_lun ${OCF_RESKEY_lun} -driver iscsi -target "${OCF_RESKEY_target_iqn}" -device "${OCF_RESOURCE_INSTANCE}" $group_arg -force -noprompt
-		;;
+    scst)
+        ocf_run scstadmin -open_dev "${OCF_RESOURCE_INSTANCE}" -handler vdisk_blockio -attributes "filename=${OCF_RESKEY_path},nv_cache=0,write_through=1"
+        if [ -n "${OCF_RESKEY_scsi_sn}" ]; then
+            ocf_run scstadmin -set_dev_attr "${OCF_RESOURCE_INSTANCE}" -attributes "usn=${OCF_RESKEY_scsi_sn}" -force -noprompt
+        fi
+        if [ -n "${OCF_RESKEY_vendor_id}" ]; then
+            ocf_run scstadmin -set_dev_attr "${OCF_RESOURCE_INSTANCE}" -attributes "t10_vend_id=${OCF_RESKEY_vendor_id}" -force -noprompt
+        fi
+        if [ -n "${OCF_RESKEY_product_id}" ]; then
+            ocf_run scstadmin -set_dev_attr "${OCF_RESOURCE_INSTANCE}" -attributes "t10_dev_id=${OCF_RESKEY_product_id}" -force -noprompt
+        fi
+
+        # Require group (validate already enforces this, but double-check here)
+        if [ -z "${OCF_RESKEY_group}" ]; then
+            ocf_exit_reason "SCST requires 'group' to avoid global LUN mappings"
+            exit $OCF_ERR_CONFIGURED
+        fi
+
+        # Add LUN to the specified initiator group (no global fallback)
+        ocf_run scstadmin -add_lun "${OCF_RESKEY_lun}" \
+            -driver iscsi \
+            -target "${OCF_RESKEY_target_iqn}" \
+            -group "${OCF_RESKEY_group}" \
+            -device "${OCF_RESOURCE_INSTANCE}" || exit $OCF_ERR_GENERIC
+        ;;
 	esac
 
 	# Force the monitor operation to pass before start is considered a success.
@@ -576,7 +589,18 @@ iSCSILogicalUnit_stop() {
 		ocf_run targetcli /backstores/${OCF_RESKEY_liot_bstype} delete ${OCF_RESOURCE_INSTANCE} || exit $OCF_ERR_GENERIC
 		;;
 	scst)
-		ocf_run -warn scstadmin -rem_lun ${OCF_RESKEY_lun} -driver iscsi -target "${OCF_RESKEY_target_iqn}" -force -noprompt
+		if [ -n "${OCF_RESKEY_group}" ]; then
+			ocf_run -warn scstadmin -rem_lun "${OCF_RESKEY_lun}" \
+				-driver iscsi \
+				-target "${OCF_RESKEY_target_iqn}" \
+				-group "${OCF_RESKEY_group}" \
+				-force -noprompt
+		else
+			ocf_run -warn scstadmin -rem_lun "${OCF_RESKEY_lun}" \
+				-driver iscsi \
+				-target "${OCF_RESKEY_target_iqn}" \
+				-force -noprompt
+		fi
 		ocf_run scstadmin -close_dev "${OCF_RESOURCE_INSTANCE}" -handler vdisk_blockio -force -noprompt
 		;;
 	esac
@@ -639,8 +663,20 @@ iSCSILogicalUnit_monitor() {
 	scst)
 		[ -d /sys/kernel/scst_tgt/devices/${OCF_RESOURCE_INSTANCE} ] || return $OCF_NOT_RUNNING
 		[ $(cat /sys/kernel/scst_tgt/devices/${OCF_RESOURCE_INSTANCE}/active) -eq 1 ] || return $OCF_NOT_RUNNING
-		[ $(head -n1 /sys/kernel/scst_tgt/devices/${OCF_RESOURCE_INSTANCE}/filename) = "${OCF_RESKEY_path}" ] || return $OCF_NOT_RUNNING
-		[ -d /sys/kernel/scst_tgt/targets/iscsi/${OCF_RESKEY_target_iqn}/luns/${OCF_RESKEY_lun} ] && return $OCF_SUCCESS
+		devpath="$(readlink -f "${OCF_RESKEY_path}")"
+		scstpath="$(readlink -f "$(head -n1 /sys/kernel/scst_tgt/devices/${OCF_RESOURCE_INSTANCE}/filename)")"
+		[ "$scstpath" = "$devpath" ] || return $OCF_NOT_RUNNING
+		if [ -n "${OCF_RESKEY_group}" ]; then
+        # LUN is supposed to be in a specific SCST initiator group
+        if [ -d "/sys/kernel/scst_tgt/targets/iscsi/${OCF_RESKEY_target_iqn}/ini_groups/${OCF_RESKEY_group}/luns/${OCF_RESKEY_lun}" ]; then
+            return $OCF_SUCCESS
+        fi
+    else
+        # LUN is mapped at target (global) level
+        if [ -d "/sys/kernel/scst_tgt/targets/iscsi/${OCF_RESKEY_target_iqn}/luns/${OCF_RESKEY_lun}" ]; then
+            return $OCF_SUCCESS
+        fi
+    fi
 		;;
 	esac
 
